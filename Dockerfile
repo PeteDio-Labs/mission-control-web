@@ -8,29 +8,27 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build arguments for environment
-ARG VITE_API_URL=https://mc-dev.toastedbytes.com
-ARG VITE_CF_CLIENT_ID
-ARG VITE_CF_CLIENT_SECRET
-
-# Set environment variables for build
+# Nginx proxies API calls at runtime — no secrets baked into the bundle
 ENV NODE_ENV production
-ENV VITE_API_URL=${VITE_API_URL}
-ENV VITE_CF_CLIENT_ID=${VITE_CF_CLIENT_ID}
-ENV VITE_CF_CLIENT_SECRET=${VITE_CF_CLIENT_SECRET}
 
-# Build the application
+# Build the application (relative URLs; nginx handles proxying to backend)
 RUN bun run build
 
-# Production image - Nginx serving static files
+# Production image - Nginx serving static files + proxying API calls
 FROM nginx:alpine
 
-# Copy Nginx config
-COPY nginx.conf /etc/nginx/nginx.conf
+# envsubst is used to inject CF credentials into nginx config at startup
+RUN apk add --no-cache gettext
+
+# Copy nginx template and entrypoint
+COPY nginx.conf.template /etc/nginx/nginx.conf.template
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 # Copy built application
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

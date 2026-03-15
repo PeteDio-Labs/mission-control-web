@@ -7,9 +7,12 @@ class APIClient {
     // (which injects Cloudflare service token headers server-side).
     // In production builds, use the full API URL.
     if (import.meta.env.DEV) {
+      // Dev: Vite proxy intercepts /api and /metrics, injecting CF headers server-side
       this.baseUrl = '';
     } else {
-      this.baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      // Prod: nginx proxies /api and /metrics to backend with CF headers injected at runtime.
+      // VITE_API_URL can override for custom setups; defaults to relative URLs.
+      this.baseUrl = import.meta.env.VITE_API_URL ?? '';
     }
   }
 
