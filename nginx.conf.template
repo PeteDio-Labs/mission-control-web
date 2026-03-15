@@ -32,8 +32,8 @@ http {
         root /usr/share/nginx/html;
         index index.html;
 
-        # Proxy API and metrics to backend — CF service token injected at runtime from K8s secret
-        location ~ ^/(api|metrics) {
+        # Proxy API, metrics, and health sub-paths to backend — CF service token injected at runtime from K8s secret
+        location ~ ^/(api|metrics|health/) {
             proxy_pass https://mc-dev.toastedbytes.com;
             proxy_ssl_server_name on;
             proxy_ssl_name mc-dev.toastedbytes.com;
