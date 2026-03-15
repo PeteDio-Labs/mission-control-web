@@ -26,7 +26,7 @@ class CloudflareAuthClient {
       // Try multiple sources to extract email
       const email = this.extractEmail();
 
-      if (email && email !== this.FALLBACK_EMAIL) {
+      if (email && email !== CloudflareAuthClient.FALLBACK_EMAIL) {
         // Cache the real email for fallback
         this.cacheUser(email);
         return { email };
@@ -46,7 +46,7 @@ class CloudflareAuthClient {
 
     // If we're on a protected Cloudflare Access domain, assume authenticated
     // Return a generic label - Cloudflare would have redirected if not auth'd
-    return { email: this.FALLBACK_EMAIL };
+    return { email: CloudflareAuthClient.FALLBACK_EMAIL };
   }
 
   private extractEmail(): string {
@@ -63,7 +63,7 @@ class CloudflareAuthClient {
     }
 
     // Strategy 3: Return fallback (Cloudflare will show login if not authenticated)
-    return this.FALLBACK_EMAIL;
+    return CloudflareAuthClient.FALLBACK_EMAIL;
   }
 
   private extractFromCookie(): string | null {
@@ -103,7 +103,7 @@ class CloudflareAuthClient {
 
   cacheUser(email: string): void {
     try {
-      if (email && email !== this.FALLBACK_EMAIL) {
+      if (email && email !== CloudflareAuthClient.FALLBACK_EMAIL) {
         localStorage.setItem(CloudflareAuthClient.CACHE_KEY, email);
       }
     } catch {
