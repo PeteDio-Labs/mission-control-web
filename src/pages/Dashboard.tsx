@@ -2,6 +2,7 @@ import { InventorySummary } from '@/components/dashboard/InventorySummary';
 import { ProxmoxStatus } from '@/components/dashboard/ProxmoxStatus';
 import { ArgoCDStatus } from '@/components/dashboard/ArgoCDStatus';
 import { HealthStatus } from '@/components/layout/HealthStatus';
+import { EventFeed } from '@/components/dashboard/EventFeed';
 
 export default function DashboardPage() {
   return (
@@ -36,6 +37,18 @@ export default function DashboardPage() {
           <ProxmoxStatus />
           <ArgoCDStatus />
         </div>
+      </section>
+
+      {/* Bottom section: Live Events */}
+      <section>
+        <div className="mb-4">
+          <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest flex items-center gap-2">
+            <div className="h-px flex-1 bg-gradient-to-r from-gray-500 to-transparent" />
+            Activity
+          </h2>
+        </div>
+
+        <EventFeed />
       </section>
     </article>
   );
