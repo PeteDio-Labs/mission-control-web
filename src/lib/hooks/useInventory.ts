@@ -102,7 +102,7 @@ export function useProxmoxNodes() {
   });
 }
 
-export function useProxmoxResources(type?: 'node' | 'vm' | 'storage') {
+export function useProxmoxResources(type?: 'node' | 'vm' | 'lxc' | 'storage') {
   const fetcher: BareFetcher<APIResponse<any[]> | undefined> = async (path: string) => {
     return apiClient.get(path);
   };

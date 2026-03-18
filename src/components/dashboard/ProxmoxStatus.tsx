@@ -97,7 +97,7 @@ export function ProxmoxStatus() {
                   Nodes ({nodes.length})
                 </p>
                 <div className="space-y-2">
-                  {nodes.map((node) => {
+                  {[...nodes].sort((a, b) => a.node.localeCompare(b.node)).map((node) => {
                     const cpuPct = node.maxcpu && node.cpu !== undefined
                       ? Math.round((node.cpu / node.maxcpu) * 100)
                       : null;
@@ -158,7 +158,7 @@ export function ProxmoxStatus() {
                   Resources ({runningResources.length}/{allResources.length} running)
                 </p>
                 <div className="grid grid-cols-1 gap-2">
-                  {allResources.map((resource) => (
+                  {[...allResources].sort((a, b) => a.name.localeCompare(b.name)).map((resource) => (
                     <ResourceCard
                       key={resource.vmid}
                       name={resource.name}

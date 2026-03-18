@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ResourceBadge } from './ResourceBadge';
-import { useHosts, useWorkloads, useProxmoxNodes, useArgoCDApplications } from '@/lib/hooks/useInventory';
+import { useHosts, useWorkloads, useProxmoxNodes, useArgoCDApplications, useProxmoxResources } from '@/lib/hooks/useInventory';
 import { formatDistanceToNow } from 'date-fns';
 import type { Host, Workload } from '@/types/models';
 import { Server, GitBranch } from 'lucide-react';
@@ -39,9 +39,11 @@ export function UnifiedResourcesTable({
   const { data: hostsData, isLoading: hostsLoading } = useHosts();
   const { data: workloadsData, isLoading: workloadsLoading } = useWorkloads();
   const { data: proxmoxNodesData, isLoading: proxmoxLoading } = useProxmoxNodes();
+  const { data: proxmoxVMsData, isLoading: vmsLoading } = useProxmoxResources('vm');
+  const { data: proxmoxLXCsData, isLoading: lxcsLoading } = useProxmoxResources('lxc');
   const { data: appsData, isLoading: appsLoading } = useArgoCDApplications();
 
-  const isLoading = hostsLoading || workloadsLoading || proxmoxLoading || appsLoading;
+  const isLoading = hostsLoading || workloadsLoading || proxmoxLoading || vmsLoading || lxcsLoading || appsLoading;
 
   // Combine all resources
   const resources: UnifiedResource[] = [];
@@ -84,6 +86,32 @@ export function UnifiedResourcesTable({
       type: 'proxmox-node',
       source: 'proxmox',
       status: node.status === 'online' ? 'online' : node.status === 'offline' ? 'offline' : 'unknown',
+      lastUpdated: new Date().toISOString(),
+    });
+  });
+
+  // Add Proxmox VMs
+  const proxmoxVMs = proxmoxVMsData?.data || [];
+  proxmoxVMs.forEach((vm: any) => {
+    resources.push({
+      id: `vm-${vm.vmid}`,
+      name: vm.name || `VM ${vm.vmid}`,
+      type: 'proxmox-vm',
+      source: 'proxmox',
+      status: vm.status === 'running' ? 'running' : vm.status === 'stopped' ? 'stopped' : 'unknown',
+      lastUpdated: new Date().toISOString(),
+    });
+  });
+
+  // Add Proxmox LXCs
+  const proxmoxLXCs = proxmoxLXCsData?.data || [];
+  proxmoxLXCs.forEach((lxc: any) => {
+    resources.push({
+      id: `lxc-${lxc.vmid}`,
+      name: lxc.name || `LXC ${lxc.vmid}`,
+      type: 'proxmox-lxc',
+      source: 'proxmox',
+      status: lxc.status === 'running' ? 'running' : lxc.status === 'stopped' ? 'stopped' : 'unknown',
       lastUpdated: new Date().toISOString(),
     });
   });
@@ -240,7 +268,7 @@ export function UnifiedResourcesTable({
                     </div>
                   </TableCell>
                   <TableCell className="text-sm text-gray-400">
-                    {resource.type === 'workload' ? 'Workload' : resource.type === 'proxmox-node' ? 'Node' : resource.type.replace('-', ' ')}
+                    {resource.type === 'workload' ? 'Workload' : resource.type === 'proxmox-node' ? 'Node' : resource.type === 'proxmox-vm' ? 'VM' : resource.type === 'proxmox-lxc' ? 'LXC' : resource.type === 'argocd-app' ? 'App' : resource.type.replace('-', ' ')}
                   </TableCell>
                   <TableCell>
                     <ResourceBadge status={resource.status} />
