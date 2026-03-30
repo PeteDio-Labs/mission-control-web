@@ -3,7 +3,6 @@ import { ProxmoxStatus } from '@/components/dashboard/ProxmoxStatus';
 import { ArgoCDStatus } from '@/components/dashboard/ArgoCDStatus';
 import { HealthStatus } from '@/components/layout/HealthStatus';
 import { EventFeed } from '@/components/dashboard/EventFeed';
-import { QBittorrentStatus } from '@/components/dashboard/QBittorrentStatus';
 import { PrometheusStatus } from '@/components/dashboard/PrometheusStatus';
 import { ServiceStatusRow } from '@/components/dashboard/ServiceStatusRow';
 
@@ -45,17 +44,16 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* Services section: qBittorrent + Events */}
+      {/* Activity section: Events */}
       <section>
         <div className="mb-4">
           <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest flex items-center gap-2">
             <div className="h-px flex-1 bg-gradient-to-r from-gray-500 to-transparent" />
-            Services & Activity
+            Activity
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <QBittorrentStatus />
+        <div className="grid grid-cols-1 gap-4">
           <EventFeed />
         </div>
       </section>

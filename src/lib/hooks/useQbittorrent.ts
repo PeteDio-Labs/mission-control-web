@@ -39,3 +39,10 @@ export function useQBittorrentTransfer() {
     dedupingInterval: 5000,
   });
 }
+
+export async function addTorrent(
+  magnetUrl: string,
+  category: 'tv-sonarr' | 'radarr'
+): Promise<void> {
+  await apiClient.post('/api/v1/qbittorrent/torrents', { magnetUrl, category });
+}

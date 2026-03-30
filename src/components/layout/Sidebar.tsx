@@ -1,11 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Server, Bell } from 'lucide-react';
+import { Home, Server, Bell, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: Home },
   { href: '/alerts', label: 'Alerts', icon: Bell },
   { href: '/inventory', label: 'Inventory', icon: Server },
+  { href: '/qbittorrent', label: 'qBittorrent', icon: Download },
   // { href: '/tasks', label: 'Tasks', icon: ListTodo },
   // { href: '/usage', label: 'Usage', icon: BarChart3 },
   // { href: '/settings', label: 'Settings', icon: Settings },

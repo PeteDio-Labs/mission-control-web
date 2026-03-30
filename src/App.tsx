@@ -4,6 +4,7 @@ import { AppShell } from '@/components/layout/AppShell';
 import DashboardPage from '@/pages/Dashboard';
 import AlertsPage from '@/pages/Alerts';
 import InventoryPage from '@/pages/Inventory';
+import QBittorrentPage from '@/pages/QBittorrent';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/alerts" element={<AlertsPage />} />
           <Route path="/inventory" element={<InventoryPage />} />
+          <Route path="/qbittorrent" element={<QBittorrentPage />} />
         </Routes>
       </AppShell>
     </AuthProvider>
