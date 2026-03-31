@@ -18,7 +18,16 @@ export function ConnectionStatus() {
     );
   }
 
-  if (error || isLoading) {
+  if (isLoading) {
+    return (
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="h-2 w-2 rounded-full bg-yellow-500 shadow-lg shadow-yellow-500/50 animate-pulse" />
+        <span className="font-medium">Connecting...</span>
+      </div>
+    );
+  }
+
+  if (error) {
     return (
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <div className="h-2 w-2 rounded-full bg-red-500 shadow-lg shadow-red-500/50" />

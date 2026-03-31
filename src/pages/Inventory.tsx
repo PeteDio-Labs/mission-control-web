@@ -64,8 +64,11 @@ export default function InventoryPage() {
     <article className="space-y-4">
       <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Inventory</h1>
-          <p className="mt-2 text-gray-300">All infrastructure resources across Kubernetes, Proxmox, and ArgoCD.</p>
+          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+            <div className="h-1 w-1 rounded-full bg-blue-400" />
+            Inventory
+          </h1>
+          <p className="mt-1 text-sm text-gray-500">All infrastructure resources across Kubernetes, Proxmox, and ArgoCD.</p>
         </div>
         <Button onClick={handleRefresh} disabled={state.isSyncing} variant="outline" className="gap-2">
           <RefreshCw className={`h-4 w-4 ${state.isSyncing ? 'animate-spin' : ''}`} />

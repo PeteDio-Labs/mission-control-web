@@ -1,4 +1,3 @@
-import { useAuth } from '@/lib/auth/AuthContext';
 import { ConnectionStatus } from './ConnectionStatus';
 
 function MissionControlIcon({ className }: { className?: string }) {
@@ -32,15 +31,6 @@ function MissionControlIcon({ className }: { className?: string }) {
 }
 
 export function Header() {
-  const { user, logout } = useAuth();
-
-  // Extract just the email part (before @) for display, or use full email
-  const displayName = user?.email
-    ? user.email.startsWith('authenticated-user')
-      ? 'User'
-      : user.email.split('@')[0] || user.email
-    : null;
-
   return (
     <header className="fixed top-0 z-50 w-full glass-panel border-b border-white/[0.08]">
       <div className="flex h-16 items-center justify-between px-6">
@@ -48,20 +38,7 @@ export function Header() {
           <MissionControlIcon className="h-9 w-9 shadow-lg shadow-primary/30 rounded-xl" />
           <h1 className="text-lg font-bold tracking-tight text-white">Mission Control</h1>
         </div>
-        <div className="flex items-center gap-4">
-          <ConnectionStatus />
-          {user && displayName && (
-            <div className="flex items-center gap-3 pl-4 border-l border-white/[0.08]">
-              <p className="text-sm font-medium text-slate-300">{displayName}</p>
-              <button
-                onClick={logout}
-                className="px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/[0.1] rounded transition-colors"
-              >
-                Logout
-              </button>
-            </div>
-          )}
-        </div>
+        <ConnectionStatus />
       </div>
     </header>
   );
