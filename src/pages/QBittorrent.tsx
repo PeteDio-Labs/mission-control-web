@@ -74,8 +74,11 @@ export default function QBittorrentPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white mb-1">qBittorrent</h1>
-        <p className="text-sm text-muted-foreground">Torrent client status and magnet link submission.</p>
+        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+          <div className="h-1 w-1 rounded-full bg-orange-400" />
+          qBittorrent
+        </h1>
+        <p className="text-sm text-gray-500 mt-1">Torrent client status and magnet link submission.</p>
       </div>
 
       <QBittorrentStatus />
@@ -115,7 +118,7 @@ export default function QBittorrentPage() {
                 value={state.category}
                 onChange={(e) => dispatch({ type: 'SET_CATEGORY', payload: e.target.value as Category })}
                 disabled={state.isSubmitting}
-                className="flex h-10 w-full rounded-lg border border-white/[0.08] bg-white/[0.05] px-3 py-2 text-sm backdrop-blur-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50 transition-all duration-200"
+                className="flex h-10 w-full rounded-lg border border-white/[0.08] bg-[#1c1c20] px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50 transition-all duration-200 [&>option]:bg-[#1c1c20]"
               >
                 <option value="tv-sonarr">tv-sonarr</option>
                 <option value="radarr">radarr</option>

@@ -46,7 +46,6 @@ function StatusDot({ service }: { service: ServiceDot }) {
 export function ServiceStatusRow() {
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      <span className="text-xs font-medium text-gray-500 uppercase tracking-wider mr-1">Services</span>
       {SERVICES.map((svc) => (
         <StatusDot key={svc.name} service={svc} />
       ))}

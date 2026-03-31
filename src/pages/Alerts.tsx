@@ -108,14 +108,14 @@ export default function AlertsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Bell className="h-6 w-6 text-gray-400" />
-          <div>
-            <h1 className="text-xl font-semibold text-high-contrast">Alerts</h1>
-            <p className="text-sm text-gray-400">
-              {counts.total} events · {counts.critical} critical · {counts.warning} warnings
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+            <div className="h-1 w-1 rounded-full bg-red-400" />
+            Alerts
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            {counts.total} events · {counts.critical} critical · {counts.warning} warnings
+          </p>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="relative flex h-2 w-2">

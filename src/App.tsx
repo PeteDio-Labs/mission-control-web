@@ -5,6 +5,10 @@ import DashboardPage from '@/pages/Dashboard';
 import AlertsPage from '@/pages/Alerts';
 import InventoryPage from '@/pages/Inventory';
 import QBittorrentPage from '@/pages/QBittorrent';
+import ProxmoxPage from '@/pages/Proxmox';
+import ArgoCDPage from '@/pages/ArgoCD';
+import MetricsPage from '@/pages/Metrics';
+import EventsPage from '@/pages/Events';
 
 function App() {
   return (
@@ -13,8 +17,12 @@ function App() {
         <Routes>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/alerts" element={<AlertsPage />} />
+          <Route path="/events" element={<EventsPage />} />
           <Route path="/inventory" element={<InventoryPage />} />
           <Route path="/qbittorrent" element={<QBittorrentPage />} />
+          <Route path="/proxmox" element={<ProxmoxPage />} />
+          <Route path="/argocd" element={<ArgoCDPage />} />
+          <Route path="/metrics" element={<MetricsPage />} />
         </Routes>
       </AppShell>
     </AuthProvider>
