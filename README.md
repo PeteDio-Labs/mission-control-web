@@ -29,6 +29,13 @@ bun test
 - **Charts:** Recharts
 - **Routing:** React Router v7
 
+## Pages
+
+| Route | Description |
+|-------|-------------|
+| `/` | Dashboard — inventory, health, metrics |
+| `/agents` | Agent run history, live status, approval cards |
+
 ## Production Setup
 
 The production image (nginx:alpine) proxies `/api`, `/health`, and `/metrics` directly to `mission-control-backend:3000` via internal K8s DNS — no Cloudflare tunnel needed for local access.
