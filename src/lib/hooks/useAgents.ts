@@ -1,0 +1,64 @@
+import useSWR from 'swr';
+import { apiClient } from '@/lib/api/client';
+
+export type AgentStatus = 'running' | 'waiting_approval' | 'complete' | 'failed';
+
+export interface GatedAction {
+  actionType: string;
+  description: string;
+  preview?: string;
+}
+
+export interface AgentRun {
+  id: string;
+  task_id: string;
+  agent_name: string;
+  trigger: string;
+  status: AgentStatus;
+  input: Record<string, unknown>;
+  summary: string | null;
+  pending_approval: GatedAction | null;
+  issued_at: string;
+  started_at: string;
+  completed_at: string | null;
+  duration_ms: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+const fetcher = (path: string) => apiClient.get(path);
+
+/** Live status panel — one row per agent name */
+export function useAgents() {
+  const { data, error, isLoading, mutate } = useSWR<{ agents: AgentRun[] }>(
+    '/api/v1/agents',
+    fetcher,
+    { refreshInterval: 10000, revalidateOnFocus: true },
+  );
+  return { agents: data?.agents ?? [], isLoading, error, refresh: mutate };
+}
+
+/** Paginated run history */
+export function useAgentHistory(opts: { limit?: number; offset?: number; agent?: string } = {}) {
+  const params = new URLSearchParams();
+  if (opts.limit) params.set('limit', String(opts.limit));
+  if (opts.offset) params.set('offset', String(opts.offset));
+  if (opts.agent) params.set('agent', opts.agent);
+
+  const { data, error, isLoading, mutate } = useSWR<{ runs: AgentRun[]; limit: number; offset: number }>(
+    `/api/v1/agents/history?${params}`,
+    fetcher,
+    { refreshInterval: 15000 },
+  );
+  return { runs: data?.runs ?? [], isLoading, error, refresh: mutate };
+}
+
+/** Approve a gated action */
+export async function approveAgentAction(taskId: string): Promise<void> {
+  await apiClient.post(`/api/v1/agents/${taskId}/approve`, {});
+}
+
+/** Reject a gated action */
+export async function rejectAgentAction(taskId: string): Promise<void> {
+  await apiClient.post(`/api/v1/agents/${taskId}/reject`, {});
+}

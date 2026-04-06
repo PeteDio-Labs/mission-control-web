@@ -9,6 +9,7 @@ import ProxmoxPage from '@/pages/Proxmox';
 import ArgoCDPage from '@/pages/ArgoCD';
 import MetricsPage from '@/pages/Metrics';
 import EventsPage from '@/pages/Events';
+import AgentsPage from '@/pages/Agents';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/alerts" element={<AlertsPage />} />
           <Route path="/events" element={<EventsPage />} />
+          <Route path="/agents" element={<AgentsPage />} />
           <Route path="/inventory" element={<InventoryPage />} />
           <Route path="/qbittorrent" element={<QBittorrentPage />} />
           <Route path="/proxmox" element={<ProxmoxPage />} />
