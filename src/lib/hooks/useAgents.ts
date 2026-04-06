@@ -26,7 +26,7 @@ export interface AgentRun {
   updated_at: string;
 }
 
-const fetcher = (path: string) => apiClient.get(path);
+const fetcher = <T>(path: string): Promise<T> => apiClient.get<T>(path);
 
 /** Live status panel — one row per agent name */
 export function useAgents() {
