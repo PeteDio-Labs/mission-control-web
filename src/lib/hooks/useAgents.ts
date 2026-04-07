@@ -17,6 +17,7 @@ export interface AgentRun {
   status: AgentStatus;
   input: Record<string, unknown>;
   summary: string | null;
+  current_message: string | null;
   pending_approval: GatedAction | null;
   issued_at: string;
   started_at: string;
@@ -33,7 +34,7 @@ export function useAgents() {
   const { data, error, isLoading, mutate } = useSWR<{ agents: AgentRun[] }>(
     '/api/v1/agents',
     fetcher,
-    { refreshInterval: 10000, revalidateOnFocus: true },
+    { refreshInterval: 3000, revalidateOnFocus: true },
   );
   return { agents: data?.agents ?? [], isLoading, error, refresh: mutate };
 }

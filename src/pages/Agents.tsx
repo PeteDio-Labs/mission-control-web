@@ -106,26 +106,38 @@ function ApprovalCard({ run, onResolved }: { run: AgentRun; onResolved: () => vo
 function AgentStatusCard({ run }: { run: AgentRun }) {
   const cfg = statusConfig[run.status] ?? statusConfig.failed!;
   const Icon = cfg.icon;
+  const isRunning = run.status === 'running';
+  const liveMsg = run.current_message;
+  const displayMsg = run.summary ?? (liveMsg ? null : `Trigger: ${run.trigger}`);
+
   return (
-    <Card className="border border-white/[0.08] bg-gradient-to-br from-white/5 to-transparent">
+    <Card className={cn(
+      'border bg-gradient-to-br from-white/5 to-transparent',
+      isRunning ? 'border-blue-500/20' : 'border-white/[0.08]',
+    )}>
       <CardContent className="p-4">
-        <div className="flex items-center gap-3">
+        <div className="flex items-start gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/[0.06]">
             <Bot className="h-5 w-5 text-gray-400" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <span className="font-medium text-white text-sm truncate">{run.agent_name}</span>
-              <Badge className={cn('text-[10px] px-1.5 py-0', cfg.color)}>
-                <Icon className="h-2.5 w-2.5 mr-1 inline" />
+              <Badge className={cn('text-[10px] px-1.5 py-0 shrink-0', cfg.color)}>
+                <Icon className={cn('h-2.5 w-2.5 mr-1 inline', isRunning && 'animate-spin')} />
                 {cfg.label}
               </Badge>
             </div>
-            <p className="text-xs text-gray-500 mt-0.5 truncate">
-              {run.summary ?? `Trigger: ${run.trigger}`}
-            </p>
+            {/* Live progress message — shown while running */}
+            {isRunning && liveMsg && (
+              <p className="text-xs text-blue-300/80 mt-1.5 font-mono truncate">{liveMsg}</p>
+            )}
+            {/* Final summary or trigger */}
+            {displayMsg && (
+              <p className="text-xs text-gray-500 mt-0.5 truncate">{displayMsg}</p>
+            )}
           </div>
-          <span className="text-xs text-gray-600 shrink-0">
+          <span className="text-xs text-gray-600 shrink-0 mt-0.5">
             {formatDistanceToNow(new Date(run.updated_at), { addSuffix: true })}
           </span>
         </div>
