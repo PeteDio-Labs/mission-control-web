@@ -9,7 +9,7 @@ interface ServiceDot {
 }
 
 const SERVICES: ServiceDot[] = [
-  { name: 'Kubernetes', path: '/api/v1/argocd/status', connectedKey: 'connected' },
+  { name: 'Kubernetes', path: '/api/v1/kubernetes/status', connectedKey: 'connected' },
   { name: 'Proxmox', path: '/api/v1/proxmox/status', connectedKey: 'connected' },
   { name: 'ArgoCD', path: '/api/v1/argocd/status', connectedKey: 'connected' },
   { name: 'Prometheus', path: '/api/v1/prometheus/status', connectedKey: 'connected' },
