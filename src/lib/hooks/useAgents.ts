@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import { apiClient } from '@/lib/api/client';
 
-export type AgentStatus = 'running' | 'waiting_approval' | 'complete' | 'failed';
+export type AgentStatus = 'queued' | 'running' | 'waiting_approval' | 'complete' | 'failed' | 'dead-letter';
 
 export interface GatedAction {
   actionType: string;
@@ -54,6 +54,16 @@ export function useAgentHistory(opts: { limit?: number; offset?: number; agent?:
   return { runs: data?.runs ?? [], isLoading, error, refresh: mutate };
 }
 
+/** Queued + running tasks */
+export function useAgentQueue() {
+  const { data, error, isLoading, mutate } = useSWR<{ queue: AgentRun[] }>(
+    '/api/v1/agents/queue',
+    fetcher,
+    { refreshInterval: 3000 },
+  );
+  return { queue: data?.queue ?? [], isLoading, error, refresh: mutate };
+}
+
 /** Approve a gated action */
 export async function approveAgentAction(taskId: string): Promise<void> {
   await apiClient.post(`/api/v1/agents/${taskId}/approve`, {});
@@ -62,4 +72,9 @@ export async function approveAgentAction(taskId: string): Promise<void> {
 /** Reject a gated action */
 export async function rejectAgentAction(taskId: string): Promise<void> {
   await apiClient.post(`/api/v1/agents/${taskId}/reject`, {});
+}
+
+/** Trigger an agent run */
+export async function triggerAgent(agentName: string, input: Record<string, unknown>): Promise<{ taskId: string }> {
+  return apiClient.post(`/api/v1/agents/${agentName}/trigger`, { agentName, trigger: 'manual', input });
 }
