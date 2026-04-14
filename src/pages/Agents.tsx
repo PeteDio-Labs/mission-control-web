@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bot, CheckCircle, XCircle, Clock, AlertTriangle, ChevronDown, ChevronUp, RefreshCw, Play, Loader2 } from 'lucide-react';
+import { Bot, CheckCircle, XCircle, Clock, AlertTriangle, ChevronDown, ChevronUp, RefreshCw, Play, Loader2, FileText, List, FileCode, GitCommit, ScrollText, Link, AlignLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,21 +10,23 @@ import {
   useAgents,
   useAgentHistory,
   useAgentQueue,
+  useAgentRun,
   approveAgentAction,
   rejectAgentAction,
   triggerAgent,
   type AgentRun,
+  type Artifact,
 } from '@/lib/hooks/useAgents';
 
 // ─── Constants ────────────────────────────────────────────────────
 
 const AGENTS = [
-  { name: 'ops-investigator', description: 'Investigates infra alerts and pod failures',       defaultInput: { focus: 'full' } },
+  { name: 'ops-investigator', description: 'Investigates infra alerts and pod failures',       defaultInput: { mode: 'full-check' } },
   { name: 'blog-agent',       description: 'Generates blog content from infra events',          defaultInput: { contentType: 'how-to' } },
   { name: 'pm-agent',         description: 'Manages project tasks and planning documents',      defaultInput: { mode: 'board-status' } },
-  { name: 'knowledge-janitor',description: 'Audits knowledge/ for stale docs',                  defaultInput: { scope: 'full' } },
-  { name: 'workstation-agent',description: 'Executes shell, file, git, kubectl ops on LXC 113', defaultInput: { task: '', gated: false } },
-  { name: 'infra-agent',      description: 'Runs Ansible playbooks and checks Proxmox capacity',defaultInput: { task: '', gated: false } },
+  { name: 'knowledge-janitor',description: 'Audits knowledge/ for stale docs',                  defaultInput: { scope: 'audit' } },
+  { name: 'workstation-agent',description: 'Executes shell, file, git, kubectl ops on LXC 113', defaultInput: { mode: 'health-check', gated: false } },
+  { name: 'infra-agent',      description: 'Runs Ansible playbooks and checks Proxmox capacity',defaultInput: { mode: 'health-check', gated: false } },
 ];
 
 const statusConfig: Record<string, { label: string; color: string; icon: typeof Bot }> = {
@@ -35,6 +37,145 @@ const statusConfig: Record<string, { label: string; color: string; icon: typeof 
   failed:           { label: 'Failed',           color: 'bg-red-500/20 text-red-300 border-red-500/30',          icon: XCircle },
   'dead-letter':    { label: 'Dead Letter',      color: 'bg-red-900/20 text-red-400 border-red-900/30',          icon: XCircle },
 };
+
+const artifactIcon: Record<Artifact['type'], typeof FileText> = {
+  'investigation-report': FileText,
+  'task-list':            List,
+  'blog-draft':           AlignLeft,
+  'diff':                 GitCommit,
+  'log':                  ScrollText,
+  'pr-url':               Link,
+  'summary':              FileCode,
+};
+
+// ─── Artifact Viewer ──────────────────────────────────────────────
+
+function ArtifactViewer({ artifact }: { artifact: Artifact }) {
+  const [expanded, setExpanded] = useState(true);
+  const Icon = artifactIcon[artifact.type] ?? FileText;
+
+  return (
+    <div className="border border-white/[0.08] rounded-lg overflow-hidden">
+      <button
+        onClick={() => setExpanded(e => !e)}
+        className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-white/[0.03] hover:bg-white/[0.05] text-left"
+      >
+        <Icon className="h-3.5 w-3.5 text-gray-400 shrink-0" />
+        <span className="text-xs font-medium text-gray-300 flex-1 truncate">{artifact.label}</span>
+        <Badge className="text-[10px] px-1.5 py-0 bg-white/[0.05] text-gray-500 border-white/[0.08] shrink-0">
+          {artifact.type}
+        </Badge>
+        {expanded ? (
+          <ChevronUp className="h-3.5 w-3.5 text-gray-600 shrink-0" />
+        ) : (
+          <ChevronDown className="h-3.5 w-3.5 text-gray-600 shrink-0" />
+        )}
+      </button>
+      {expanded && (
+        <pre className="px-3 py-2.5 text-xs text-gray-400 bg-black/20 overflow-auto max-h-80 whitespace-pre-wrap break-words font-mono leading-relaxed">
+          {artifact.content || '(empty)'}
+        </pre>
+      )}
+    </div>
+  );
+}
+
+// ─── Run Detail Modal ─────────────────────────────────────────────
+
+function RunDetailModal({ taskId, onClose }: { taskId: string; onClose: () => void }) {
+  const { run, isLoading } = useAgentRun(taskId);
+  const cfg = run ? (statusConfig[run.status] ?? statusConfig.failed!) : null;
+  const Icon = cfg?.icon ?? Bot;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-2xl max-h-[85vh] bg-[#0f1117] border border-white/[0.12] rounded-xl shadow-2xl flex flex-col"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.08] shrink-0">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.06]">
+            <Bot className="h-4 w-4 text-gray-400" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h2 className="text-white font-semibold text-sm truncate">{run?.agent_name ?? '...'}</h2>
+              {cfg && (
+                <Badge className={cn('text-[10px] px-1.5 py-0 shrink-0', cfg.color)}>
+                  <Icon className="h-2.5 w-2.5 mr-1 inline" />
+                  {cfg.label}
+                </Badge>
+              )}
+            </div>
+            <p className="text-xs text-gray-600 font-mono truncate">{taskId}</p>
+          </div>
+          <button onClick={onClose} className="text-gray-600 hover:text-gray-300 shrink-0 text-lg leading-none">×</button>
+        </div>
+
+        {/* Body */}
+        <div className="overflow-y-auto flex-1 px-5 py-4 space-y-4">
+          {isLoading && (
+            <div className="flex items-center gap-2 text-gray-500 text-sm">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Loading run details...
+            </div>
+          )}
+
+          {run && (
+            <>
+              {/* Meta row */}
+              <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-gray-500">
+                <span>Trigger: <span className="text-gray-400 capitalize">{run.trigger}</span></span>
+                {run.duration_ms && (
+                  <span>Duration: <span className="text-gray-400">{(run.duration_ms / 1000).toFixed(1)}s</span></span>
+                )}
+                {run.completed_at && (
+                  <span>Completed: <span className="text-gray-400">{format(new Date(run.completed_at), 'MMM d, HH:mm:ss')}</span></span>
+                )}
+              </div>
+
+              {/* Summary */}
+              {run.summary && (
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-gray-600 mb-1.5">Summary</p>
+                  <p className="text-sm text-gray-300">{run.summary}</p>
+                </div>
+              )}
+
+              {/* Artifacts */}
+              {run.result?.artifacts && run.result.artifacts.length > 0 ? (
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-gray-600 mb-2">
+                    Artifacts ({run.result.artifacts.length})
+                  </p>
+                  <div className="space-y-2">
+                    {run.result.artifacts.map((artifact, i) => (
+                      <ArtifactViewer key={i} artifact={artifact} />
+                    ))}
+                  </div>
+                </div>
+              ) : run.status === 'complete' || run.status === 'failed' ? (
+                <p className="text-xs text-gray-600">No artifacts recorded for this run.</p>
+              ) : null}
+
+              {/* Input */}
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-gray-600 mb-1.5">Input</p>
+                <pre className="text-xs text-gray-500 bg-black/20 rounded-lg p-3 overflow-auto max-h-32 font-mono">
+                  {JSON.stringify(run.input, null, 2)}
+                </pre>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ─── Trigger Modal ────────────────────────────────────────────────
 
@@ -229,15 +370,23 @@ function ApprovalCard({ run, onResolved }: { run: AgentRun; onResolved: () => vo
 
 // ─── Agent Status Card ────────────────────────────────────────────
 
-function AgentStatusCard({ run }: { run: AgentRun }) {
+function AgentStatusCard({ run, onClick }: { run: AgentRun; onClick: () => void }) {
   const cfg = statusConfig[run.status] ?? statusConfig.failed!;
   const Icon = cfg.icon;
   const isRunning = run.status === 'running';
+  const isComplete = run.status === 'complete' || run.status === 'failed';
   const liveMsg = run.current_message;
   const displayMsg = run.summary ?? (liveMsg ? null : `Trigger: ${run.trigger}`);
 
   return (
-    <Card className={cn('border bg-gradient-to-br from-white/5 to-transparent', isRunning ? 'border-blue-500/20' : 'border-white/[0.08]')}>
+    <Card
+      onClick={isComplete ? onClick : undefined}
+      className={cn(
+        'border bg-gradient-to-br from-white/5 to-transparent',
+        isRunning ? 'border-blue-500/20' : 'border-white/[0.08]',
+        isComplete && 'cursor-pointer hover:border-white/20 hover:bg-white/[0.04] transition-colors',
+      )}
+    >
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/[0.06]">
@@ -257,6 +406,9 @@ function AgentStatusCard({ run }: { run: AgentRun }) {
             {displayMsg && (
               <p className="text-xs text-gray-500 mt-0.5 truncate">{displayMsg}</p>
             )}
+            {isComplete && (
+              <p className="text-[10px] text-gray-700 mt-1">Click to view artifacts</p>
+            )}
           </div>
           <span className="text-xs text-gray-600 shrink-0 mt-0.5">
             {formatDistanceToNow(new Date(run.updated_at), { addSuffix: true })}
@@ -269,11 +421,14 @@ function AgentStatusCard({ run }: { run: AgentRun }) {
 
 // ─── Run History Row ──────────────────────────────────────────────
 
-function RunRow({ run }: { run: AgentRun }) {
+function RunRow({ run, onClick }: { run: AgentRun; onClick: () => void }) {
   const cfg = statusConfig[run.status] ?? statusConfig.failed!;
   const Icon = cfg.icon;
   return (
-    <div className="flex items-center gap-3 py-2.5 border-b border-white/[0.04] last:border-0">
+    <div
+      onClick={onClick}
+      className="flex items-center gap-3 py-2.5 border-b border-white/[0.04] last:border-0 cursor-pointer hover:bg-white/[0.02] rounded px-1 -mx-1 transition-colors"
+    >
       <Icon className={cn('h-3.5 w-3.5 shrink-0', {
         'text-gray-400':   run.status === 'queued',
         'text-blue-400':   run.status === 'running',
@@ -325,14 +480,13 @@ export default function AgentsPage() {
   const { runs, isLoading: historyLoading, refresh: refreshHistory } = useAgentHistory({ limit: 50 });
   const { queue, isLoading: queueLoading, refresh: refreshQueue } = useAgentQueue();
   const [triggerTarget, setTriggerTarget] = useState<string | null>(null);
+  const [detailTaskId, setDetailTaskId] = useState<string | null>(null);
 
   const pendingApprovals = agents.filter(a => a.status === 'waiting_approval');
   const triggerAgentDef = AGENTS.find(a => a.name === triggerTarget);
 
   function refreshAll() { refreshAgents(); refreshHistory(); refreshQueue(); }
-
   function handleResolved() { refreshAll(); }
-
   function handleTriggered() { setTimeout(refreshAll, 1000); }
 
   return (
@@ -394,7 +548,13 @@ export default function AgentsPage() {
                 <p className="text-sm text-gray-500">No agent runs yet. Use the Trigger tab to dispatch an agent.</p>
               ) : (
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {agents.map(run => <AgentStatusCard key={run.task_id} run={run} />)}
+                  {agents.map(run => (
+                    <AgentStatusCard
+                      key={run.task_id}
+                      run={run}
+                      onClick={() => setDetailTaskId(run.task_id)}
+                    />
+                  ))}
                 </div>
               )}
             </CardContent>
@@ -480,7 +640,13 @@ export default function AgentsPage() {
                     <span className="w-16 text-right shrink-0">Duration</span>
                     <span className="w-32 text-right shrink-0">Started</span>
                   </div>
-                  {runs.map(run => <RunRow key={run.task_id} run={run} />)}
+                  {runs.map(run => (
+                    <RunRow
+                      key={run.task_id}
+                      run={run}
+                      onClick={() => setDetailTaskId(run.task_id)}
+                    />
+                  ))}
                 </div>
               )}
             </CardContent>
@@ -495,6 +661,14 @@ export default function AgentsPage() {
           defaultInput={triggerAgentDef.defaultInput}
           onClose={() => setTriggerTarget(null)}
           onTriggered={handleTriggered}
+        />
+      )}
+
+      {/* Run Detail Modal */}
+      {detailTaskId && (
+        <RunDetailModal
+          taskId={detailTaskId}
+          onClose={() => setDetailTaskId(null)}
         />
       )}
     </div>

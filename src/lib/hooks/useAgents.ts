@@ -9,6 +9,22 @@ export interface GatedAction {
   preview?: string;
 }
 
+export interface Artifact {
+  type: 'investigation-report' | 'task-list' | 'blog-draft' | 'diff' | 'log' | 'pr-url' | 'summary';
+  label: string;
+  content: string;
+}
+
+export interface AgentResult {
+  taskId: string;
+  agentName: string;
+  status: 'complete' | 'failed';
+  summary: string;
+  artifacts: Artifact[];
+  durationMs: number;
+  completedAt: string;
+}
+
 export interface AgentRun {
   id: string;
   task_id: string;
@@ -19,6 +35,7 @@ export interface AgentRun {
   summary: string | null;
   current_message: string | null;
   pending_approval: GatedAction | null;
+  result: AgentResult | null;
   issued_at: string;
   started_at: string;
   completed_at: string | null;
@@ -62,6 +79,16 @@ export function useAgentQueue() {
     { refreshInterval: 3000 },
   );
   return { queue: data?.queue ?? [], isLoading, error, refresh: mutate };
+}
+
+/** Single run detail — fetches result + artifacts */
+export function useAgentRun(taskId: string | null) {
+  const { data, error, isLoading } = useSWR<{ run: AgentRun }>(
+    taskId ? `/api/v1/agents/${taskId}` : null,
+    fetcher,
+    { refreshInterval: 0 },
+  );
+  return { run: data?.run ?? null, isLoading, error };
 }
 
 /** Approve a gated action */
