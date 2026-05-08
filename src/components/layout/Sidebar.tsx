@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Server, Bell, Download, GitBranch, Activity, Radio, Bot } from 'lucide-react';
+import { Home, Server, Bell, GitBranch, Activity, Radio, Bot } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type NavGroup = {
@@ -29,7 +29,6 @@ const navGroups: NavGroup[] = [
     label: 'Resources',
     items: [
       { href: '/inventory', label: 'Inventory', icon: Server },
-      { href: '/qbittorrent', label: 'qBittorrent', icon: Download },
     ],
   },
 ];

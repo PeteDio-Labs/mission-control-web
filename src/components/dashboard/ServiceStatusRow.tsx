@@ -13,7 +13,6 @@ const SERVICES: ServiceDot[] = [
   { name: 'Proxmox', path: '/api/v1/proxmox/status', connectedKey: 'connected' },
   { name: 'ArgoCD', path: '/api/v1/argocd/status', connectedKey: 'connected' },
   { name: 'Prometheus', path: '/api/v1/prometheus/status', connectedKey: 'connected' },
-  { name: 'qBittorrent', path: '/api/v1/qbittorrent/status', connectedKey: 'connected' },
 ];
 
 function StatusDot({ service }: { service: ServiceDot }) {
