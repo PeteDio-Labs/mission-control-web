@@ -23,7 +23,6 @@ import {
 const AGENTS = [
   { name: 'ops-investigator', description: 'Investigates infra alerts and pod failures',       defaultInput: { mode: 'full-check' } },
   { name: 'blog-agent',       description: 'Generates blog content from infra events',          defaultInput: { contentType: 'how-to' } },
-  { name: 'pm-agent',         description: 'Manages project tasks and planning documents',      defaultInput: { mode: 'board-status' } },
   { name: 'knowledge-janitor',description: 'Audits knowledge/ for stale docs',                  defaultInput: { scope: 'audit' } },
   { name: 'workstation-agent',description: 'Executes shell, file, git, kubectl ops on LXC 113', defaultInput: { mode: 'health-check', gated: false } },
   { name: 'infra-agent',      description: 'Runs Ansible playbooks and checks Proxmox capacity',defaultInput: { mode: 'health-check', gated: false } },
