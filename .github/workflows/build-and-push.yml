@@ -43,7 +43,7 @@ jobs:
         if: github.event_name == 'push'
         uses: docker/login-action@v3
         with:
-          registry: docker.toastedbytes.com
+          registry: docker.pdlab.dev
           username: ${{ secrets.NEXUS_USERNAME }}
           password: ${{ secrets.NEXUS_PASSWORD }}
 
@@ -52,7 +52,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: docker.toastedbytes.com/mission-control-web
+          images: docker.pdlab.dev/mission-control-web
           tags: |
             type=ref,event=branch
             type=ref,event=pr
