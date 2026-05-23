@@ -9,6 +9,8 @@ import ArgoCDPage from '@/pages/ArgoCD';
 import MetricsPage from '@/pages/Metrics';
 import EventsPage from '@/pages/Events';
 import AgentsPage from '@/pages/Agents';
+import PlansPage from '@/pages/Plans';
+import PlanDetailPage from '@/pages/PlanDetail';
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
           <Route path="/alerts" element={<AlertsPage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/agents" element={<AgentsPage />} />
+          <Route path="/plans" element={<PlansPage />} />
+          <Route path="/plans/:id" element={<PlanDetailPage />} />
           <Route path="/inventory" element={<InventoryPage />} />
           <Route path="/proxmox" element={<ProxmoxPage />} />
           <Route path="/argocd" element={<ArgoCDPage />} />

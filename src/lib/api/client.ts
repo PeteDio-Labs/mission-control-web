@@ -1,3 +1,24 @@
+/**
+ * Error thrown by APIClient on non-2xx responses. Exposes the HTTP status
+ * (so callers can distinguish 409 from 410 etc.) and the parsed JSON body
+ * when the server returned one.
+ *
+ * Backward-compatible with the previous `throw new Error('API error: ...')`
+ * pattern — message still embeds the statusText, and existing callers that
+ * only check `err.message` keep working.
+ */
+export class APIError extends Error {
+  status: number;
+  body: unknown;
+
+  constructor(status: number, statusText: string, body: unknown) {
+    super(`API error: ${statusText || status}`);
+    this.name = 'APIError';
+    this.status = status;
+    this.body = body;
+  }
+}
+
 class APIClient {
   private baseUrl: string;
   private token: string | null = null;
@@ -37,6 +58,16 @@ class APIClient {
     return headers;
   }
 
+  private async parseError(response: Response): Promise<APIError> {
+    let body: unknown = null;
+    try {
+      body = await response.json();
+    } catch {
+      // Non-JSON error body — leave as null.
+    }
+    return new APIError(response.status, response.statusText, body);
+  }
+
   async get<T>(path: string): Promise<T> {
     const response = await fetch(`${this.baseUrl}${path}`, {
       method: 'GET',
@@ -44,7 +75,7 @@ class APIClient {
     });
 
     if (!response.ok) {
-      throw new Error(`API error: ${response.statusText}`);
+      throw await this.parseError(response);
     }
 
     return response.json();
@@ -58,7 +89,7 @@ class APIClient {
     });
 
     if (!response.ok) {
-      throw new Error(`API error: ${response.statusText}`);
+      throw await this.parseError(response);
     }
 
     return response.json();

@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Server, Bell, GitBranch, Activity, Radio, Bot } from 'lucide-react';
+import { Home, Server, Bell, GitBranch, Activity, Radio, Bot, ClipboardCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type NavGroup = {
@@ -14,6 +14,7 @@ const navGroups: NavGroup[] = [
       { href: '/', label: 'Dashboard', icon: Home },
       { href: '/events', label: 'Events', icon: Radio },
       { href: '/alerts', label: 'Alerts', icon: Bell },
+      { href: '/plans', label: 'Plans', icon: ClipboardCheck },
       { href: '/agents', label: 'Agents', icon: Bot },
     ],
   },
@@ -48,7 +49,12 @@ export function Sidebar() {
             <div className="flex flex-col gap-0.5">
               {group.items.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.href;
+                // Root '/' must be exact; everything else also matches nested
+                // routes (so /plans/:id keeps the Plans link highlighted).
+                const isActive =
+                  item.href === '/'
+                    ? pathname === '/'
+                    : pathname === item.href || pathname.startsWith(`${item.href}/`);
                 return (
                   <Link
                     key={item.href}

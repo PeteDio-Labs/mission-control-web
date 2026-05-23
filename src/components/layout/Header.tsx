@@ -1,4 +1,5 @@
 import { ConnectionStatus } from './ConnectionStatus';
+import { PlansBell } from './PlansBell';
 
 function MissionControlIcon({ className }: { className?: string }) {
   return (
@@ -38,7 +39,10 @@ export function Header() {
           <MissionControlIcon className="h-9 w-9 shadow-lg shadow-primary/30 rounded-xl" />
           <h1 className="text-lg font-bold tracking-tight text-white">Mission Control</h1>
         </div>
-        <ConnectionStatus />
+        <div className="flex items-center gap-3">
+          <PlansBell />
+          <ConnectionStatus />
+        </div>
       </div>
     </header>
   );
