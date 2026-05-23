@@ -50,6 +50,6 @@ Browser → nginx (:80)
 
 ## Deployment
 
-Pushed to `docker.toastedbytes.com/mission-control-web` via GitHub Actions on the `develop` branch. ArgoCD Image Updater handles digest bumps automatically.
+Pushed to `docker.pdlab.dev/mission-control-web` via GitHub Actions on the `develop` branch. ArgoCD Image Updater handles digest bumps automatically.
 
 Local access: `http://192.168.50.60:31367`

@@ -34,10 +34,10 @@ http {
 
         # Proxy API and metrics to backend — CF service token injected at runtime from K8s secret
         location ~ ^/(api|metrics) {
-            proxy_pass https://mc-dev.toastedbytes.com;
+            proxy_pass https://mc-dev.pdlab.dev;
             proxy_ssl_server_name on;
-            proxy_ssl_name mc-dev.toastedbytes.com;
-            proxy_set_header Host mc-dev.toastedbytes.com;
+            proxy_ssl_name mc-dev.pdlab.dev;
+            proxy_set_header Host mc-dev.pdlab.dev;
             proxy_set_header CF-Access-Client-Id ${CF_CLIENT_ID};
             proxy_set_header CF-Access-Client-Secret ${CF_CLIENT_SECRET};
             proxy_set_header X-Real-IP $remote_addr;
