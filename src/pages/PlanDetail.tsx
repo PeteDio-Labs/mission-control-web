@@ -334,7 +334,6 @@ export default function PlanDetailPage() {
     if (liveForThisPlan.length > 0) {
       refresh();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [liveForThisPlan.length]);
 
   // Auto-scroll the timeline when new events land.

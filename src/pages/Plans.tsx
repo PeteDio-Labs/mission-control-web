@@ -205,8 +205,8 @@ export default function PlansPage() {
     if (planEvents.length > 0) {
       refresh();
     }
-    // We only care that *something* changed, not the full event list.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Intentionally only depending on .length — full event list churns
+    // every SSE tick; we just care that something changed.
   }, [planEvents.length]);
 
   function selectFilter(next: FilterValue) {

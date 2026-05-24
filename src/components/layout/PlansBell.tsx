@@ -43,7 +43,6 @@ export function PlansBell() {
     if (events.length > 0) {
       mutate();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [events.length]);
 
   const count = data?.plans.length ?? 0;
