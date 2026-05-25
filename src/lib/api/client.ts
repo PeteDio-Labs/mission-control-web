@@ -95,6 +95,33 @@ class APIClient {
     return response.json();
   }
 
+  async patch<T>(path: string, body: unknown): Promise<T> {
+    const response = await fetch(`${this.baseUrl}${path}`, {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      throw await this.parseError(response);
+    }
+
+    return response.json();
+  }
+
+  async delete<T>(path: string): Promise<T> {
+    const response = await fetch(`${this.baseUrl}${path}`, {
+      method: 'DELETE',
+      headers: this.getHeaders(),
+    });
+
+    if (!response.ok) {
+      throw await this.parseError(response);
+    }
+
+    return response.json();
+  }
+
   createEventSource(path: string): EventSource {
     let urlStr: string;
     if (this.baseUrl) {

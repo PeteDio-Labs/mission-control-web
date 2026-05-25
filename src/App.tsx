@@ -11,6 +11,7 @@ import EventsPage from '@/pages/Events';
 import AgentsPage from '@/pages/Agents';
 import PlansPage from '@/pages/Plans';
 import PlanDetailPage from '@/pages/PlanDetail';
+import SettingsPage from '@/pages/Settings';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/proxmox" element={<ProxmoxPage />} />
           <Route path="/argocd" element={<ArgoCDPage />} />
           <Route path="/metrics" element={<MetricsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </AppShell>
     </AuthProvider>

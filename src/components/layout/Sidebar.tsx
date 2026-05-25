@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Server, Bell, GitBranch, Activity, Radio, Bot, ClipboardCheck } from 'lucide-react';
+import { Home, Server, Bell, GitBranch, Activity, Radio, Bot, ClipboardCheck, Cog } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type NavGroup = {
@@ -30,6 +30,12 @@ const navGroups: NavGroup[] = [
     label: 'Resources',
     items: [
       { href: '/inventory', label: 'Inventory', icon: Server },
+    ],
+  },
+  {
+    label: 'System',
+    items: [
+      { href: '/settings', label: 'Settings', icon: Cog },
     ],
   },
 ];
