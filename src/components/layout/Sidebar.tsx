@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Server, Bell, GitBranch, Activity, Radio, Bot, ClipboardCheck, Cog } from 'lucide-react';
+import { Home, Server, Bell, GitBranch, Activity, Radio, Bot, ClipboardCheck, Cog, Map as MapIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type NavGroup = {
@@ -15,6 +15,7 @@ const navGroups: NavGroup[] = [
       { href: '/events', label: 'Events', icon: Radio },
       { href: '/alerts', label: 'Alerts', icon: Bell },
       { href: '/plans', label: 'Plans', icon: ClipboardCheck },
+      { href: '/roadmap', label: 'Roadmap', icon: MapIcon },
       { href: '/agents', label: 'Agents', icon: Bot },
     ],
   },

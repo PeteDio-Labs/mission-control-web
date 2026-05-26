@@ -11,6 +11,8 @@ import EventsPage from '@/pages/Events';
 import AgentsPage from '@/pages/Agents';
 import PlansPage from '@/pages/Plans';
 import PlanDetailPage from '@/pages/PlanDetail';
+import RoadmapPage from '@/pages/Roadmap';
+import RoadmapDetailPage from '@/pages/RoadmapDetail';
 import SettingsPage from '@/pages/Settings';
 
 function App() {
@@ -24,6 +26,8 @@ function App() {
           <Route path="/agents" element={<AgentsPage />} />
           <Route path="/plans" element={<PlansPage />} />
           <Route path="/plans/:id" element={<PlanDetailPage />} />
+          <Route path="/roadmap" element={<RoadmapPage />} />
+          <Route path="/roadmap/:id" element={<RoadmapDetailPage />} />
           <Route path="/inventory" element={<InventoryPage />} />
           <Route path="/proxmox" element={<ProxmoxPage />} />
           <Route path="/argocd" element={<ArgoCDPage />} />
